@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "119897682295",
+    "firebase_url": "https://connectix-aaa8a.firebaseio.com",
+    "project_id": "connectix-aaa8a",
+    "storage_bucket": "connectix-aaa8a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119897682295:android:2d3d35461a803ee7",
+        "android_client_info": {
+          "package_name": "com.example.connetix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "119897682295-nli2fneh69joc6q7j9h5gd619fpdjb09.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.connetix",
+            "certificate_hash": "3cf15a2ee132d05e144ea5b75b856845edf8b38f"
+          }
+        },
+        {
+          "client_id": "119897682295-oposfd1kr14hgs21vvo3co0e62k4s10r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAV30zZnQSz8qbTF5RnqDtaQDhxn8z2LAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "119897682295-oposfd1kr14hgs21vvo3co0e62k4s10r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
