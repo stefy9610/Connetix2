@@ -1,5 +1,6 @@
 package com.example.connetix;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,14 +8,21 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton AddNewPostButton;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference UsersRef;
+    private DatabaseReference UsersRef, PostsRef;
 
     String currentUserID;
 
@@ -50,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        PostsRef = FirebaseDatabase.getInstance().getReference().child("Posts");
 
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
@@ -63,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        postList = (RecyclerView) findViewById(R.id.all_users_post_list);
+        postList.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        postList.setLayoutManager(linearLayoutManager);
 
         View navView = navigationView.inflateHeaderView(R.layout.navigation_header);
         NavProfileImage = (CircleImageView) navView.findViewById(R.id.nav_profile_image);
@@ -143,7 +158,80 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        DisplayAllUsersPosts();
     }
+
+    private void DisplayAllUsersPosts() {
+        FirebaseRecyclerOptions<Posts> options = new FirebaseRecyclerOptions.Builder<Posts>().setQuery(PostsRef, Posts.class).build();
+        FirebaseRecyclerAdapter<Posts, PostsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Posts, PostsViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull PostsViewHolder holder, int position, @NonNull Posts model) {
+                holder.setFullname(model.getFullname());
+                holder.setTime(model.getTime());
+                holder.setDate(model.getDate());
+                holder.setDescription(model.getDescription());
+                holder.setProfileimage(model.getProfileImage());
+                holder.setPostImage(model.getPostImage());
+            }
+
+            @NonNull
+            @Override
+            public PostsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.all_post_layout,parent,false);
+                PostsViewHolder viewHolder = new PostsViewHolder(view);
+                return viewHolder;
+            }
+        };
+        postList.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.startListening();
+    }
+    public static class PostsViewHolder extends RecyclerView.ViewHolder{
+        View mView;
+
+        public PostsViewHolder(View itemView)
+        {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setFullname(String fullname)
+        {
+            TextView username = (TextView) mView.findViewById(R.id.post_user_name);
+            username.setText(fullname);
+        }
+
+        public void setProfileimage(String profileimage)
+        {
+            CircleImageView image = (CircleImageView) mView.findViewById(R.id.post_profile_image);
+            Picasso.get().load(profileimage).into(image);
+        }
+
+        public void setTime(String time)
+        {
+            TextView PostTime = (TextView) mView.findViewById(R.id.post_time);
+            PostTime.setText("    " + time);
+        }
+
+        public void setDate(String date)
+        {
+            TextView PostDate = (TextView) mView.findViewById(R.id.post_date);
+            PostDate.setText("    " + date);
+        }
+
+        public void setDescription(String description)
+        {
+            TextView PostDescription = (TextView) mView.findViewById(R.id.post_description);
+            PostDescription.setText(description);
+        }
+
+        public void setPostImage(String postImage)
+        {
+            ImageView PostImage = (ImageView) mView.findViewById(R.id.post_image);
+            Picasso.get().load(postImage).into(PostImage);
+        }
+    }
+
 
     private void SendUserToSetupActivity() {
         Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
