@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 holder.setTime(model.getTime());
                 holder.setDate(model.getDate());
                 holder.setDescription(model.getDescription());
-                holder.setProfileimage(model.getProfileImage());
+                holder.setProfileImage(model.getProfileImage());
                 holder.setPostImage(model.getPostImage());
             }
 
@@ -201,10 +201,10 @@ public class MainActivity extends AppCompatActivity {
             username.setText(fullname);
         }
 
-        public void setProfileimage(String profileimage)
+        public void setProfileImage(String profileImage)
         {
             CircleImageView image = (CircleImageView) mView.findViewById(R.id.post_profile_image);
-            Picasso.get().load(profileimage).into(image);
+            Picasso.get().load(profileImage).into(image);
         }
 
         public void setTime(String time)
