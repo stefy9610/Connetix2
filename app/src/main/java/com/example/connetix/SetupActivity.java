@@ -123,8 +123,8 @@ public class SetupActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 loadingBar.setTitle("Profile image");
                 loadingBar.setMessage("Please wait, we are updating your profile image");
-                loadingBar.show();
                 loadingBar.setCanceledOnTouchOutside(true);
+                loadingBar.show();
 
                 Uri resultUri = result.getUri();
 

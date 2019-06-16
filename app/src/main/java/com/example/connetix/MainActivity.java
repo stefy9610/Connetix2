@@ -265,6 +265,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(loginIntent);
     }
 
+    private void SendUserToProfilectivity() {
+        Intent loginIntent = new Intent(MainActivity.this, ProfileActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -282,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_profile:
+                SendUserToProfilectivity();
                 Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
                 break;
 
