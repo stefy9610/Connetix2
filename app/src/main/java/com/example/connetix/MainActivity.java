@@ -46,9 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton AddNewPostButton;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference UsersRef, PostsRef;
+    Boolean LikeChecker = false;
 
     String currentUserID;
+    private DatabaseReference UsersRef, PostsRef, LikesRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         currentUserID = mAuth.getCurrentUser().getUid();
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         PostsRef = FirebaseDatabase.getInstance().getReference().child("Posts");
+        LikesRef = FirebaseDatabase.getInstance().getReference().child("Likes");
 
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
@@ -163,8 +165,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void DisplayAllUsersPosts() {
-        FirebaseRecyclerOptions<Posts> options = new FirebaseRecyclerOptions.Builder<Posts>().setQuery(PostsRef, Posts.class).build();
-        FirebaseRecyclerAdapter<Posts, PostsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Posts, PostsViewHolder>(options) {
+        FirebaseRecyclerOptions<Posts> options =
+                new FirebaseRecyclerOptions.Builder<Posts>()
+                .setQuery(PostsRef, Posts.class).build();
+        FirebaseRecyclerAdapter<Posts, PostsViewHolder> firebaseRecyclerAdapter =
+                new FirebaseRecyclerAdapter<Posts, PostsViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull PostsViewHolder holder, int position, @NonNull Posts model) {
 
@@ -177,12 +182,52 @@ public class MainActivity extends AppCompatActivity {
                 holder.setProfileImage(model.getProfileImage());
                 holder.setPostImage(model.getPostImage());
 
+                holder.setLikeButtonStatus(PostKey);
+
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent clickPostIntent = new Intent(MainActivity.this, ClickPostActivity.class);
                         clickPostIntent.putExtra("PostKey", PostKey);
                         startActivity(clickPostIntent);
+                    }
+                });
+
+                holder.CommentPostButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent commentsIntent = new Intent(MainActivity.this, CommentsActivity.class);
+                        commentsIntent.putExtra("PostKey", PostKey);
+                        startActivity(commentsIntent);
+                    }
+                });
+
+                holder.LikePostButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LikeChecker = true;
+
+                        LikesRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                             if(LikeChecker.equals(true)) {
+                                 if(dataSnapshot.child(PostKey).hasChild(currentUserID)) {
+                                     LikesRef.child(PostKey).child(currentUserID).removeValue();
+                                     LikeChecker = false;
+                                 }
+                                 else {
+                                     LikesRef.child(PostKey).child(currentUserID).setValue(true);
+                                     LikeChecker = false;
+                                 }
+                             }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
                 });
             }
@@ -198,13 +243,140 @@ public class MainActivity extends AppCompatActivity {
         postList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
     }
+
+    private void SendUserToProfileActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, ProfileActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+    }
+
+
+    private void SendUserToSetupActivity() {
+        Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
+        setupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(setupIntent);
+        finish();
+    }
+
+    private void SendUserToLoginActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+        finish();
+    }
+
+    private void SendUserToSettingsActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, SettingsActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+    }
+
+    private void SendUserToFindFriendsActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+    }
+
+    private void UserMenuSelector(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_post:
+                SendUserToPostActivity();
+                Toast.makeText(this, "New Post", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_profile:
+                SendUserToProfileActivity();
+                Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_home:
+                Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_friends:
+                Toast.makeText(this, "Friends List", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_find_friends:
+                SendUserToFindFriendsActivity();
+                Toast.makeText(this, "Find Friends", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_messages:
+                Toast.makeText(this, "Messages", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_settings:
+                SendUserToSettingsActivity();
+                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_logout:
+                mAuth.signOut();
+                SendUserToLoginActivity();
+                break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public static class PostsViewHolder extends RecyclerView.ViewHolder{
         View mView;
+
+        ImageButton LikePostButton, CommentPostButton;
+        TextView DisplayNoOfLikes;
+        int countLikes;
+        String currentUserId;
+        DatabaseReference LikesRef;
 
         public PostsViewHolder(View itemView)
         {
             super(itemView);
             mView = itemView;
+
+            LikePostButton =  (ImageButton) mView.findViewById(R.id.like_button);
+            CommentPostButton =  (ImageButton) mView.findViewById(R.id.comment_button);
+            DisplayNoOfLikes = (TextView) mView.findViewById(R.id.display_no_of_likes);
+
+            LikesRef = FirebaseDatabase.getInstance().getReference().child("Likes");
+            currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        }
+
+        public void setLikeButtonStatus(final String PostKey)
+        {
+            LikesRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.child(PostKey).hasChild(currentUserId)) {
+                        countLikes = (int) dataSnapshot.child(PostKey).getChildrenCount();
+                        LikePostButton.setImageResource(R.drawable.like);
+                        if(countLikes > 1) {
+                            DisplayNoOfLikes.setText((Integer.toString(countLikes)) + (" Likes"));
+                        }
+                        else {
+                            DisplayNoOfLikes.setText((Integer.toString(countLikes)) + (" Like"));
+                        }
+                    }
+                    else {
+                        countLikes = (int) dataSnapshot.child(PostKey).getChildrenCount();
+                        LikePostButton.setImageResource(R.drawable.dislike);
+                        DisplayNoOfLikes.setText((Integer.toString(countLikes)) + (" Likes"));
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
         public void setFullname(String fullname)
@@ -241,82 +413,6 @@ public class MainActivity extends AppCompatActivity {
         {
             ImageView PostImage = (ImageView) mView.findViewById(R.id.post_image);
             Picasso.get().load(postImage).into(PostImage);
-        }
-    }
-
-
-    private void SendUserToSetupActivity() {
-        Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
-        setupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(setupIntent);
-        finish();
-    }
-
-    private void SendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-        finish();
-    }
-
-    private void SendUserToSettingsActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-    }
-
-    private void SendUserToProfilectivity() {
-        Intent loginIntent = new Intent(MainActivity.this, ProfileActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void UserMenuSelector(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_post:
-                SendUserToPostActivity();
-                Toast.makeText(this, "New Post", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_profile:
-                SendUserToProfilectivity();
-                Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_home:
-                Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_friends:
-                Toast.makeText(this, "Friends List", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_find_friends:
-                Toast.makeText(this, "Find Friends", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_messages:
-                Toast.makeText(this, "Messages", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_settings:
-                SendUserToSettingsActivity();
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.nav_logout:
-                mAuth.signOut();
-                SendUserToLoginActivity();
-                break;
         }
     }
 

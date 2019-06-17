@@ -59,9 +59,11 @@ public class SettingsActivity extends AppCompatActivity {
         SettingsUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId);
         UserProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
-//        setSupportActionBar(mToolbar);
-//        getSupportActionBar().setTitle("Account Settings");
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mToolbar = (Toolbar) findViewById(R.id.settings_toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Account Settings");
 
         userName = (EditText) findViewById(R.id.settings_username);
         userProfileName = (EditText) findViewById(R.id.settings_profile_fullname);
@@ -72,7 +74,6 @@ public class SettingsActivity extends AppCompatActivity {
         userDOB = (EditText) findViewById(R.id.settings_dob);
         userProfImage = (CircleImageView) findViewById(R.id.settings_profile_image);
         UpdateAccountSettingsButton = (Button) findViewById(R.id.update_account_settings_button);
-        mToolbar = (Toolbar) findViewById(R.id.settings_toolbar);
         loadingBar = new ProgressDialog(this);
 
         SettingsUserRef.addValueEventListener(new ValueEventListener() {

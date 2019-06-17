@@ -63,10 +63,10 @@ public class ProfileActivity extends AppCompatActivity {
                     userName.setText("@" + myUserName);
                     userProfileName.setText(myProfileName);
                     userStatus.setText(myProfileStatus);
-                    userDOB.setText("DOB:" + myDOB);
-                    userCountry.setText("Country:" + myCountry);
-                    userGender.setText("Gender:" + myGender);
-                    userRelation.setText("Relationship Status:" + myRelationStatus);
+                    userDOB.setText("DOB: " + myDOB);
+                    userCountry.setText("Country: " + myCountry);
+                    userGender.setText("Gender: " + myGender);
+                    userRelation.setText("Relationship Status: " + myRelationStatus);
                 }
             }
 
