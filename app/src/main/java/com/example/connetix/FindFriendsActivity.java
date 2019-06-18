@@ -80,9 +80,9 @@ public class FindFriendsActivity extends AppCompatActivity {
                 new FirebaseRecyclerAdapter<FindFriends, FindFriendViewHolder>(options)
         {
             @Override
-            protected void onBindViewHolder(@NonNull FindFriendViewHolder holder, int position, @NonNull FindFriends model)
+            protected void onBindViewHolder(@NonNull FindFriendViewHolder holder, final int position, @NonNull FindFriends model)
             {
-                final String PostKey = getRef(position).getKey();
+
                 holder.fullName.setText(model.getFullname());
                 holder.status.setText(model.getStatus());
                 Picasso.get().load(model.getProfileImage()).into(holder.profileImage);
@@ -92,10 +92,10 @@ public class FindFriendsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v)
                     {
-                        Intent findOthersIntent = new Intent(FindFriendsActivity.this, FindFriendsActivity.class);
-                        findOthersIntent.putExtra("PostKey", PostKey);
-                        startActivity(findOthersIntent);
-
+                        String visit_user_id = getRef(position).getKey();
+                        Intent profileIntent = new Intent(FindFriendsActivity.this, PersonProfileActivity.class);
+                        profileIntent.putExtra("visit_user_id", visit_user_id);
+                        startActivity(profileIntent);
                     }
                 });
             }
