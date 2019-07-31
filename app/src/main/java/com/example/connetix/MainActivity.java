@@ -29,6 +29,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         postList.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
+        linearLayoutManager.setReverseLayout(true);
         postList.setLayoutManager(linearLayoutManager);
 
         View navView = navigationView.inflateHeaderView(R.layout.navigation_header);
@@ -165,9 +167,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void DisplayAllUsersPosts() {
+
+        Query SortPostInDescendingOrder = PostsRef.orderByChild("counter");
         FirebaseRecyclerOptions<Posts> options =
                 new FirebaseRecyclerOptions.Builder<Posts>()
-                .setQuery(PostsRef, Posts.class).build();
+                .setQuery(SortPostInDescendingOrder, Posts.class).build();
         FirebaseRecyclerAdapter<Posts, PostsViewHolder> firebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<Posts, PostsViewHolder>(options) {
             @Override
@@ -267,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void SendUserToSettingsActivity() {
         Intent loginIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
     }
 
@@ -294,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_friends:
+                SendUserToFriendsActivity();
                 Toast.makeText(this, "Friends List", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -303,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_messages:
+                SendUserToFriendsActivity();
                 Toast.makeText(this, "Messages", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -316,6 +321,11 @@ public class MainActivity extends AppCompatActivity {
                 SendUserToLoginActivity();
                 break;
         }
+    }
+
+    private void SendUserToFriendsActivity() {
+        Intent friendsIntent = new Intent(MainActivity.this, FriendsActivity.class);
+        startActivity(friendsIntent);
     }
 
     @Override

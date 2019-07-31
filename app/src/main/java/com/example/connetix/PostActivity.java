@@ -49,6 +49,7 @@ public class PostActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private String saveCurrentDate, saveCurrentTime, postRandomName, downloadURL, current_user_id;
+    private long countPosts = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,21 +139,42 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void SavingPostInformationToDatabase() {
-        UsersRef.child(current_user_id).addValueEventListener(new ValueEventListener() {
+
+        PostsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    String userFullname = dataSnapshot.child("fullname").getValue().toString();
-                    String userProfileImage = dataSnapshot.child("profileImage").getValue().toString();
+                    countPosts = dataSnapshot.getChildrenCount();
+                }
+                else {
+                    countPosts = 0;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        UsersRef.child(current_user_id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists()) {
+
+                    final String userFullname = dataSnapshot.child("fullname").getValue().toString();
+                    final String userProfileImage = dataSnapshot.child("profileImage").getValue().toString();
 
                     HashMap postsMap = new HashMap();
-                        postsMap.put("uid", current_user_id);
-                        postsMap.put("date", saveCurrentDate);
-                        postsMap.put("time", saveCurrentTime);
-                        postsMap.put("description", Description);
-                        postsMap.put("postImage", downloadURL);
-                        postsMap.put("profileImage", userProfileImage);
-                        postsMap.put("fullname", userFullname);
+                    postsMap.put("uid", current_user_id);
+                    postsMap.put("date", saveCurrentDate);
+                    postsMap.put("time", saveCurrentTime);
+                    postsMap.put("description", Description);
+                    postsMap.put("postImage", downloadURL);
+                    postsMap.put("profileImage", userProfileImage);
+                    postsMap.put("fullname", userFullname);
+                    postsMap.put("counter", countPosts);
                     PostsRef.child(current_user_id + postRandomName).updateChildren(postsMap)
                             .addOnCompleteListener(new OnCompleteListener() {
                                 @Override

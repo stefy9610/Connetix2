@@ -73,7 +73,7 @@ public class FindFriendsActivity extends AppCompatActivity {
 
         FirebaseRecyclerOptions<FindFriends> options =
                 new FirebaseRecyclerOptions.Builder<FindFriends>()
-                        .setQuery(allUsersDatabaseRef, FindFriends.class)
+                        .setQuery(searchquery, FindFriends.class)
                         .build();
 
         FirebaseRecyclerAdapter<FindFriends, FindFriendViewHolder> adapter =
@@ -83,8 +83,8 @@ public class FindFriendsActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull FindFriendViewHolder holder, final int position, @NonNull FindFriends model)
             {
 
-                holder.fullName.setText(model.getFullname());
                 holder.status.setText(model.getStatus());
+                holder.fullName.setText(model.getFullname());
                 Picasso.get().load(model.getProfileImage()).into(holder.profileImage);
 
                 holder.itemView.setOnClickListener(new View.OnClickListener()
