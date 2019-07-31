@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +17,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -49,8 +52,6 @@ public class FriendsActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         linearLayoutManager.setReverseLayout(true);
         myFriendList.setLayoutManager(linearLayoutManager);
-
-//        DisplayAllFriends();
     }
 
     @Override
@@ -58,11 +59,25 @@ public class FriendsActivity extends AppCompatActivity {
 
         super.onStart();
 
-       FirebaseRecyclerAdapter<Friends, FriendsViewHolder> adapter =
-               new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>() {
+        Query query = FriendsRef.orderByChild("date");
+
+        FirebaseRecyclerOptions<Friends> options =
+                new FirebaseRecyclerOptions.Builder<Friends>()
+                        .setQuery(query, Friends.class)
+                        .build();
+
+       FirebaseRecyclerAdapter adapter =
+               new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(options) {
+                   @NonNull
+                   @Override
+                   public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                       View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.all_users_display_layout, viewGroup,false);
+                       FriendsViewHolder viewHolder = new FriendsViewHolder(view);
+                       return viewHolder;
+                   }
+
                    @Override
                    protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull final Friends model) {
-
                        holder.friendsDate.setText(model.getDate());
 
                        final String usersIDs = getRef(position).getKey();
@@ -75,7 +90,7 @@ public class FriendsActivity extends AppCompatActivity {
                                    final String userName = dataSnapshot.child("fullname").getValue().toString();
                                    final String profileImage = dataSnapshot.child("profileImage").getValue().toString();
 
-                                   holder.fullName.setText(model.getFullname());
+                                   holder.fullName.setText(userName);
                                    holder.mView.setOnClickListener(new View.OnClickListener() {
                                        @Override
                                        public void onClick(View v) {
@@ -118,16 +133,10 @@ public class FriendsActivity extends AppCompatActivity {
                        });
 
                    }
-
-                   @NonNull
-                   @Override
-                   public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                       View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.all_users_display_layout, viewGroup,false);
-                       FriendsViewHolder viewHolder = new FriendsViewHolder(view);
-                       return viewHolder;
-                   }
-
                };
+
+        myFriendList.setAdapter(adapter);
+        adapter.startListening();
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
