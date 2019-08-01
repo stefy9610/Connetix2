@@ -77,8 +77,8 @@ public class FriendsActivity extends AppCompatActivity {
                    }
 
                    @Override
-                   protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull final Friends model) {
-                       holder.friendsDate.setText(model.getDate());
+                   protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, final int position, @NonNull final Friends model) {
+                       holder.friendsDate.setText("Friends since: " + model.getDate());
 
                        final String usersIDs = getRef(position).getKey();
 
@@ -91,6 +91,9 @@ public class FriendsActivity extends AppCompatActivity {
                                    final String profileImage = dataSnapshot.child("profileImage").getValue().toString();
 
                                    holder.fullName.setText(userName);
+                                   Picasso.get().load(model.getProfileImage()).into(holder.profileImage);
+
+
                                    holder.mView.setOnClickListener(new View.OnClickListener() {
                                        @Override
                                        public void onClick(View v) {
@@ -101,6 +104,7 @@ public class FriendsActivity extends AppCompatActivity {
                                                    };
                                            AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
                                            builder.setTitle("Select Option");
+
                                            builder.setItems(options, new DialogInterface.OnClickListener() {
                                                @Override
                                                public void onClick(DialogInterface dialog, int which) {
@@ -113,11 +117,12 @@ public class FriendsActivity extends AppCompatActivity {
                                                    if (which == 1) {
                                                        Intent chatIntent = new Intent(FriendsActivity.this, ChatActivity.class);
                                                        chatIntent.putExtra("visit_user_id", usersIDs);
+                                                       chatIntent.putExtra("userName", userName);
                                                        startActivity(chatIntent);
                                                    }
                                                }
                                            });
-
+                                           builder.show();
 
                                        }
                                    });
@@ -146,7 +151,6 @@ public class FriendsActivity extends AppCompatActivity {
 
         public FriendsViewHolder(@NonNull View itemView) {
             super(itemView);
-
             mView = itemView;
 
             friendsDate = itemView.findViewById(R.id.all_users_status);

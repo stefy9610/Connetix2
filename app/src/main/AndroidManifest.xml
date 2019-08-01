@@ -13,10 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChatActivity"></activity>
-        <activity android:name=".FriendsActivity" />
-        <activity android:name=".PersonProfileActivity" />
-        <activity android:name=".CommentsActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity">
@@ -39,9 +35,14 @@
         <activity
             android:name=".FindFriendsActivity"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".CommentsActivity" />
         <activity
             android:name=".ResetPasswordActivity"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".PersonProfileActivity" />
+        <activity android:name=".FriendsActivity" />
+        <activity android:name=".ChatActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

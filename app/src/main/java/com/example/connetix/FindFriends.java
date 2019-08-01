@@ -23,7 +23,8 @@ public class FindFriends {
         this.profileImage = profileImage;
     }
 
-    public String getFullname() {
+    public String getFullname()
+    {
         return fullname;
     }
 
