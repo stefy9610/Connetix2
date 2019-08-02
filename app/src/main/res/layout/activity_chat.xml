@@ -13,7 +13,7 @@
     </include>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/messages_list_of_users"
+        android:id="@+id/messages_list_users"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/myLinearLayout"
