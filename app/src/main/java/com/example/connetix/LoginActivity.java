@@ -37,6 +37,8 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog loadingBar;
 
     private FirebaseAuth mAuth;
+    private Boolean emailAddressChecker;
+
     private TextView NeedNewAccountLink, ForgetPasswordLink;
     private static final String TAG = "LoginActivity";
     private ImageView googleSignInButton;
@@ -189,9 +191,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete( Task<AuthResult> task) {
                             if(task.isSuccessful()) {
-                                SendUserToMainActivity();
-
-                                Toast.makeText(LoginActivity.this, "You have successfully logged in", Toast.LENGTH_SHORT).show();
+                                VerifyRmailAddress();
                                 loadingBar.dismiss();
                             }
                             else {
@@ -201,6 +201,19 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     });
+        }
+    }
+
+    private void VerifyRmailAddress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        emailAddressChecker = user.isEmailVerified();
+
+        if(emailAddressChecker) {
+            SendUserToMainActivity();
+        }
+        else {
+            Toast.makeText(this, "Please verify your account first", Toast.LENGTH_SHORT).show();
+            mAuth.signOut();
         }
     }
 

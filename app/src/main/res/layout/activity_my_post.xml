@@ -6,4 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".MyPostActivity">
 
+    <include
+        android:id="@+id/my_posts_bar_layout"
+        layout="@layout/app_bar_layout">
+    </include>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_all_posts_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
 </RelativeLayout>
