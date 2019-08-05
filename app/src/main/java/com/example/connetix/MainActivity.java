@@ -33,6 +33,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CancellationException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -166,6 +172,25 @@ public class MainActivity extends AppCompatActivity {
         DisplayAllUsersPosts();
     }
 
+    public void updateUserStatus(String state) {
+        String saveCurrentDate, saveCurrentTime;
+
+        Calendar calForDate = Calendar.getInstance();
+        SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
+        saveCurrentDate = currentDate.format(calForDate.getTime());
+
+        Calendar calForTime = Calendar.getInstance();
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+        saveCurrentTime = currentTime.format(calForTime.getTime());
+
+        Map currentStateMap = new HashMap();
+        currentStateMap.put("time", saveCurrentTime);
+        currentStateMap.put("date", saveCurrentDate);
+        currentStateMap.put("type", state);
+
+        UsersRef.child(currentUserID).child("userState").updateChildren(currentStateMap);
+    }
+
     private void DisplayAllUsersPosts() {
 
         Query SortPostInDescendingOrder = PostsRef.orderByChild("counter");
@@ -246,38 +271,8 @@ public class MainActivity extends AppCompatActivity {
         };
         postList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
-    }
 
-    private void SendUserToProfileActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, ProfileActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-    }
-
-
-    private void SendUserToSetupActivity() {
-        Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
-        setupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(setupIntent);
-        finish();
-    }
-
-    private void SendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-        finish();
-    }
-
-    private void SendUserToSettingsActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(loginIntent);
-    }
-
-    private void SendUserToFindFriendsActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
+        updateUserStatus("online");
     }
 
     private void UserMenuSelector(MenuItem item) {
@@ -317,24 +312,43 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_logout:
+                updateUserStatus("offline");
                 mAuth.signOut();
                 SendUserToLoginActivity();
                 break;
         }
     }
 
-    private void SendUserToFriendsActivity() {
-        Intent friendsIntent = new Intent(MainActivity.this, FriendsActivity.class);
-        startActivity(friendsIntent);
+    private void SendUserToProfileActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, ProfileActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    private void SendUserToSetupActivity() {
+        Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
+        setupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(setupIntent);
+        finish();
+    }
+
+    private void SendUserToLoginActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+        finish();
+    }
+
+    private void SendUserToSettingsActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(loginIntent);
+    }
+
+    private void SendUserToFindFriendsActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
     }
 
     public static class PostsViewHolder extends RecyclerView.ViewHolder{
@@ -426,5 +440,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void SendUserToFriendsActivity() {
+        Intent friendsIntent = new Intent(MainActivity.this, FriendsActivity.class);
+        startActivity(friendsIntent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

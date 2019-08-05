@@ -27,6 +27,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FriendsActivity extends AppCompatActivity {
@@ -54,10 +59,30 @@ public class FriendsActivity extends AppCompatActivity {
         myFriendList.setLayoutManager(linearLayoutManager);
     }
 
+    public void updateUserStatus(String state) {
+        String saveCurrentDate, saveCurrentTime;
+
+        Calendar calForDate = Calendar.getInstance();
+        SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
+        saveCurrentDate = currentDate.format(calForDate.getTime());
+
+        Calendar calForTime = Calendar.getInstance();
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+        saveCurrentTime = currentDate.format(calForTime.getTime());
+
+        Map currentStateMap = new HashMap();
+        currentStateMap.put("time", saveCurrentTime);
+        currentStateMap.put("date", saveCurrentDate);
+        currentStateMap.put("type", state);
+
+        UsersRef.child(online_user_id).child("userState").updateChildren(currentStateMap);
+    }
+
     @Override
     protected void onStart() {
 
         super.onStart();
+        updateUserStatus("online");
 
         Query query = FriendsRef.orderByChild("date");
 
@@ -142,6 +167,18 @@ public class FriendsActivity extends AppCompatActivity {
 
         myFriendList.setAdapter(adapter);
         adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        updateUserStatus("offline");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        updateUserStatus("offline");
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
