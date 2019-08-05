@@ -13,31 +13,46 @@
         android:layout_marginLeft="10dp"
         android:src="@drawable/profile"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/all_users_profile_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="User full name"
-            android:textAlignment="textStart"
-            android:textColor="@android:color/background_light"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/all_users_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Status"
-            android:textAlignment="textStart"
-            android:textColor="@android:color/background_light"
-            android:textSize="16sp"/>
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_margin="5dp"
+           android:orientation="horizontal">
 
-    </LinearLayout>
+           <TextView
+               android:id="@+id/all_users_profile_name"
+               android:layout_width="190dp"
+               android:layout_height="wrap_content"
+               android:text="User full name"
+               android:textAlignment="textStart"
+               android:textColor="@android:color/background_light"
+               android:textSize="18sp"
+               android:textStyle="bold"/>
+           
+           <ImageView
+               android:id="@+id/all_users_online_icon"
+               android:layout_width="20dp"
+               android:layout_height="20dp"
+               android:src="@drawable/online"
+               android:visibility="invisible"/>
+
+       </LinearLayout>
+
+       <TextView
+           android:id="@+id/all_users_status"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Status"
+           android:textAlignment="textStart"
+           android:textColor="@android:color/background_light"
+           android:textSize="16sp"/>
+
+   </LinearLayout>
 
 </LinearLayout>

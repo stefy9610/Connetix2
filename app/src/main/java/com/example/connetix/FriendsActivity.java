@@ -14,6 +14,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -114,9 +115,22 @@ public class FriendsActivity extends AppCompatActivity {
 
                                    final String userName = dataSnapshot.child("fullname").getValue().toString();
                                    final String profileImage = dataSnapshot.child("profileImage").getValue().toString();
+                                   final String type;
+
+                                   if(dataSnapshot.hasChild("userState")) {
+                                       type = dataSnapshot.child("userState").child("type").getValue().toString();
+
+                                       if(type.equals("online")) {
+                                           holder.onlineStatusView.setVisibility(View.VISIBLE);
+                                       }
+                                       else {
+                                           holder.onlineStatusView.setVisibility(View.INVISIBLE);
+                                       }
+                                   }
+
 
                                    holder.fullName.setText(userName);
-                                   Picasso.get().load(model.getProfileImage()).into(holder.profileImage);
+                                   Picasso.get().load(profileImage).into(holder.profileImage);
 
 
                                    holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -183,6 +197,7 @@ public class FriendsActivity extends AppCompatActivity {
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
         View mView;
+        ImageView onlineStatusView;
         TextView fullName, friendsDate;
         CircleImageView profileImage;
 
@@ -193,6 +208,7 @@ public class FriendsActivity extends AppCompatActivity {
             friendsDate = itemView.findViewById(R.id.all_users_status);
             fullName = itemView.findViewById(R.id.all_users_profile_name);
             profileImage = itemView.findViewById(R.id.all_users_profile_image);
+            onlineStatusView = itemView.findViewById(R.id.all_users_online_icon);
 
         }
 
