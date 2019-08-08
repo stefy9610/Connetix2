@@ -12,15 +12,22 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText UserEmail, UserPassword, UserConfirmPassword;
     private Button CreateAccountButton;
     private ProgressDialog loadingBar;
+
+    private DatabaseReference RootRef;
 
     private FirebaseAuth mAuth;
     @Override
@@ -29,6 +36,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+
+        RootRef = FirebaseDatabase.getInstance().getReference();
 
         UserEmail = (EditText) findViewById(R.id.register_email);
         UserPassword = (EditText) findViewById(R.id.register_password);
@@ -84,17 +93,35 @@ public class RegisterActivity extends AppCompatActivity {
         {
             loadingBar.setTitle("Creating new account");
             loadingBar.setMessage("Please wait, we are creating your new account");
-            loadingBar.show();
             loadingBar.setCanceledOnTouchOutside(true);
+            loadingBar.show();
 
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
-                                SendEmailVerificationMessage();
-                                loadingBar.dismiss();
+                                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(RegisterActivity.this, new OnSuccessListener<InstanceIdResult>() {
+                                    @Override
+                                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                                        String currentUserID = mAuth.getCurrentUser().getUid();
+                                        String deviceToken = instanceIdResult.getToken();
+                                        RootRef.child("Users").child(currentUserID).child("device_token")
+                                                .setValue(deviceToken)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if(task.isSuccessful()) {
+                                                            SendEmailVerificationMessage();
+                                                            loadingBar.dismiss();
+                                                        }
+                                                    }
+                                                });
+                                    }
+                                });
+
                             }
+
                             else
                             {
                                 String message = task.getException().getMessage();

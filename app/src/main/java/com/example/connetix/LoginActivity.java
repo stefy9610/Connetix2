@@ -22,12 +22,17 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class LoginActivity extends AppCompatActivity {
     private Button LoginButton;
@@ -44,12 +49,15 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView googleSignInButton;
     private GoogleApiClient mGoogleSignInClient;
 
+    private DatabaseReference UsersRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         NeedNewAccountLink = (TextView) findViewById(R.id.register_account_link);
         UserEmail = (EditText) findViewById(R.id.login_email);
@@ -191,8 +199,25 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete( Task<AuthResult> task) {
                             if(task.isSuccessful()) {
-                                VerifyRmailAddress();
-                                loadingBar.dismiss();
+                                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(LoginActivity.this, new OnSuccessListener<InstanceIdResult>() {
+                                    @Override
+                                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                                        String currentUserID = mAuth.getCurrentUser().getUid();
+                                        String deviceToken = instanceIdResult.getToken();
+                                        UsersRef.child(currentUserID).child("device_token")
+                                                .setValue(deviceToken)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()) {
+                                                    VerifyEmailAddress();
+                                                    Toast.makeText(LoginActivity.this, "Logged in successful", Toast.LENGTH_SHORT).show();
+                                                    loadingBar.dismiss();
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
                             }
                             else {
                                 String message = task.getException().getMessage();
@@ -204,7 +229,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void VerifyRmailAddress() {
+    private void VerifyEmailAddress() {
         FirebaseUser user = mAuth.getCurrentUser();
         emailAddressChecker = user.isEmailVerified();
 
