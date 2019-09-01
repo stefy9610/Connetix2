@@ -4,19 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login"
+    android:background="@drawable/fly"
     tools:context=".RegisterActivity">
-
-    <ImageView
-        android:id="@+id/register_icon"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_above="@+id/register_email"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="136dp"
-        android:layout_marginBottom="59dp"
-        app:srcCompat="@drawable/logo" />
 
     <EditText
         android:id="@+id/register_email"
@@ -58,7 +47,7 @@
         android:layout_marginLeft="7dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="7dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/inputs"
         android:drawableLeft="@drawable/password"
         android:ems="10"
@@ -72,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="107dp"
+        android:layout_marginBottom="196dp"
         android:background="@drawable/button"
         android:padding="15dp"
         android:text="Create account"
