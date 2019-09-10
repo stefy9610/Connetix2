@@ -29,6 +29,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -233,9 +234,12 @@ public class LoginActivity extends AppCompatActivity {
     private void VerifyEmailAddress() {
         FirebaseUser user = mAuth.getCurrentUser();
         emailAddressChecker = user.isEmailVerified();
+        String currentUserId = mAuth.getCurrentUser().getUid();
+        DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId);
 
         if(emailAddressChecker) {
-            SendUserToMainActivity();
+            //SendUserToMainActivity();
+            SendUserToSetupActivity();
         }
         else {
             Toast.makeText(this, "Please verify your account first", Toast.LENGTH_SHORT).show();
@@ -260,5 +264,10 @@ public class LoginActivity extends AppCompatActivity {
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
         finish();
+    }
+
+    private void SendUserToSetupActivity() {
+        Intent setupIntent = new Intent(LoginActivity.this, SetupActivity.class);
+        startActivity(setupIntent);
     }
 }
