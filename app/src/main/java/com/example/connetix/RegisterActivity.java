@@ -102,7 +102,8 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
-                                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(RegisterActivity.this, new OnSuccessListener<InstanceIdResult>() {
+                                FirebaseInstanceId.getInstance().getInstanceId()
+                                        .addOnSuccessListener(RegisterActivity.this, new OnSuccessListener<InstanceIdResult>() {
                                     @Override
                                     public void onSuccess(InstanceIdResult instanceIdResult) {
                                         String currentUserID = mAuth.getCurrentUser().getUid();

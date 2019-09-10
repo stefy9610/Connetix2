@@ -73,7 +73,7 @@ public class PostActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Update Post");
+        getSupportActionBar().setTitle("Upload Post");
 
         SelectPostImage.setOnClickListener(new View.OnClickListener() {
             @Override

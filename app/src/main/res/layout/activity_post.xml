@@ -44,7 +44,7 @@
         android:layout_marginBottom="93dp"
         android:background="@drawable/button"
         android:padding="10dp"
-        android:text="Update Post"
+        android:text="Upload Post"
         android:textColor="@android:color/background_light"
         android:textSize="18dp" />
 
